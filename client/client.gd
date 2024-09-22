@@ -17,8 +17,11 @@ var prev_state := ws.STATE_CLOSED
 func _ready() -> void:
 	set_process(false)
 	ui_toggle(false)
+
+	var url := "wss://srv.kackadu.de:25569"
 	if OS.has_feature("debug"):
 		print("Debug delay")
+		url = "127.0.0.1:25569"
 		await get_tree().create_timer(1.0).timeout
 
 	button.pressed.connect(func() -> void:
@@ -28,7 +31,7 @@ func _ready() -> void:
 	)
 
 	print("Connecting on Client")
-	var err := ws.connect_to_url("wss://srv.kackadu.de:25569")
+	var err := ws.connect_to_url(url)
 	if err:
 		print("server.listen ", error_string(err))
 		return
