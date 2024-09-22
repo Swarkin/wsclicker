@@ -17,9 +17,8 @@ var prev_state := ws.STATE_CLOSED
 func _ready() -> void:
 	set_process(false)
 	ui_toggle(false)
-	ws.handshake_headers = PackedStringArray(["ngrok-skip-browser-warning: *", "user-agent: wsclicker"])
 
-	var url := "wss://indirectly-fast-gorilla.ngrok-free.app"
+	var url := "wss://srv.kackadu.de:25569"
 	if OS.has_feature("debug") and not OS.has_feature("web"): # web exports still show up as debug for some reason.
 		print("Debug mode")
 		url = "127.0.0.1:25569"
