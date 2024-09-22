@@ -18,7 +18,7 @@ func _ready() -> void:
 	set_process(false)
 	ui_toggle(false)
 
-	var url := "ws://srv.kackadu.de:25569"
+	var url := "wss://srv.kackadu.de:25569"
 	if OS.has_feature("debug") and not OS.has_feature("web"): # web exports still show up as debug for some reason.
 		print("Debug mode")
 		url = "127.0.0.1:25569"
