@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://bvqus4dbfrv1s"]
+
+[sub_resource type="GDScript" id="GDScript_qgu0r"]
+resource_name = "main"
+script/source = "extends Node
+
+func _ready() -> void:
+	if OS.has_feature(\"client\"):
+		get_tree().change_scene_to_file.call_deferred(\"res://client/client.tscn\")
+	elif OS.has_feature(\"server\"):
+		get_tree().change_scene_to_file.call_deferred(\"res://server/server.tscn\")
+	else:
+		get_tree().quit(1)
+"
+
+[node name="Main" type="Node"]
+script = SubResource("GDScript_qgu0r")
