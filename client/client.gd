@@ -18,10 +18,10 @@ func _ready() -> void:
 	set_process(false)
 	ui_toggle(false)
 
-	var url := "wss://swarkin.dev:25569"
+	var url := "wss://swarkin.dev:8080"
 	if OS.has_feature("debug") and not OS.has_feature("web"): # web exports still show up as debug for some reason.
 		print("Debug mode")
-		url = "127.0.0.1:25569"
+		url = "127.0.0.1:8080"
 		await get_tree().create_timer(1.0).timeout
 
 	button.pressed.connect(func() -> void:

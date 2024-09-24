@@ -1,7 +1,7 @@
 extends Node
 class_name Server
 
-const PORT := 25569
+const PORT := 8080
 const DELAY_MS := 20
 const PATH := "user://count"
 
