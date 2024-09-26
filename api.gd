@@ -36,7 +36,7 @@ class HelloPacket extends Packet:
 
 ## Sent to the Client to update the state
 class SyncPacket extends Packet:
-	const SIZE := 8
+	const SIZE := 9
 	var amount: int
 	var players: int
 
