@@ -46,10 +46,6 @@ class SyncPacket extends Packet:
 		players = _players
 
 	func encode() -> PackedByteArray:
-		print("encode")
-		print("type ", type)
-		print("amount ", amount)
-		print("players ", players)
 		var b := PackedByteArray()
 		b.resize(SIZE)
 		b.encode_u8(0, type)
