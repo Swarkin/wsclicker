@@ -40,6 +40,10 @@ folder_colors={
 "res://server/": "blue"
 }
 
+[gui]
+
+theme/custom_font="res://font/Inter_24pt-Regular.ttf"
+
 [input_devices]
 
 pen_tablet/driver="dummy"
@@ -53,10 +57,10 @@ limits/tcp/connect_timeout_seconds=20
 common/physics_ticks_per_second=1
 common/max_physics_steps_per_frame=1
 common/physics_jitter_fix=0.0
+2d/physics_engine="Dummy"
+3d/physics_engine="Dummy"
 common/enable_object_picking=false
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.117647, 0.117647, 0.117647, 1)

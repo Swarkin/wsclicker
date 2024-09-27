@@ -10,6 +10,7 @@ var server_thread := Thread.new()
 var clients := [] as Array[ClientConnection]
 var mutex := Mutex.new()
 var count := 0
+var packets := 0
 var shutdown := false
 
 class ClientConnection:
@@ -23,19 +24,19 @@ class ClientConnection:
 
 	func send_packet(p: PackedByteArray) -> Error:
 		if not ready:
-			push_warning("Client not ready")
 			return Error.ERR_BUSY
-		print("Server: Send")
+		print("ws.send")
 		return ws.send(p)
 
 func _ready() -> void:
 	load_count_file()
+	prints("loaded count", count)
 
 	var err := tcp.listen(PORT)
 	if err:
 		push_error("server.listen ", error_string(err))
 		return
-	print("Listening")
+	prints("listening on", PORT)
 
 	err = server_thread.start(run_server, Thread.PRIORITY_HIGH)
 	if err:
@@ -46,7 +47,7 @@ func _ready() -> void:
 func run_server() -> void:
 	while not shutdown:
 		while tcp.is_connection_available():
-			print("Taking Connection")
+			print("tcp.take_connection")
 			var peer := tcp.take_connection()
 			var err := peer.poll()
 			if err:
@@ -67,13 +68,13 @@ func handle_connection(t: Thread, peer: StreamPeerTCP) -> void:
 	var ws := WebSocketPeer.new()
 	var err := ws.accept_stream(peer)
 	if err:
-		push_error("ws.accept_stream returned ", error_string(err))
+		push_error("ws.accept_stream ", error_string(err))
 		return
 
 	var conn := ClientConnection.new(ws, t)
 	locked_ctx(func() -> void:
-		print("clients.append")
 		clients.append(conn)
+		print(clients)
 	)
 
 	while true:
@@ -85,31 +86,30 @@ func handle_connection(t: Thread, peer: StreamPeerTCP) -> void:
 					ws.close()
 					continue
 
+				mutex.lock()
+
 				while ws.get_available_packet_count():
-					print("Server: Packet received")
+					packets += 1
 					var p := API.parse_packet(ws.get_packet())
 					if not p:
-						push_error("Invalid Packet received")
+						push_error("invalid packet")
 						break
 
 					if p is API.IncreasePacket:
-						locked_ctx(func() -> void:
-							count += 1
-							sync()
-						)
+						count += 1
+						sync()
 					elif p is API.HelloPacket:
-						print("Receive Hello")
+						print("recv hello")
 						conn.ready = true
-						locked_ctx(sync.bind(conn))
+						sync(conn)
 					else:
-						push_error("Invalid PacketType received: ", p.type)
-						break
+						push_error("invalid PacketType: ", p.type)
+
+				mutex.unlock()
 
 			ws.STATE_CLOSED:
-				print("Closed Connection")
+				print("closed conn")
 				locked_ctx(func() -> void:
-					print("clients.erase")
-					print(clients)
 					clients.erase(conn)
 					print(clients)
 					sync()
@@ -119,45 +119,38 @@ func handle_connection(t: Thread, peer: StreamPeerTCP) -> void:
 		OS.delay_msec(DELAY_MS)
 
 
-func locked_ctx(f: Callable) -> void:
-	mutex.lock()
-	f.call()
-	mutex.unlock()
-
-
-## Needs locked_ctx!
+## Need
 func sync(override: ClientConnection = null) -> void:
-	print("Sync")
 	var p := API.SyncPacket.new(count, clients.size()).encode()
 	if override:
 		var err := override.send_packet(p)
 		if err:
-			push_error("conn.send_packet returned ", error_string(err))
+			push_error("conn.send_packet ", error_string(err))
 	else:
 		for conn in clients:
 			if not conn.ready: continue
 
 			var err := conn.send_packet(p)
 			if err:
-				push_error("conn.send_packet returned ", error_string(err))
+				push_error("conn.send_packet ", error_string(err))
 				continue
 
 
 func load_count_file() -> void:
-	var file_str := FileAccess.get_file_as_string(PATH)
+	var file_str := FileAccess.get_file_as_string(PATH).strip_edges(false)
 	if file_str.is_empty():
 		var err := FileAccess.get_open_error()
 		if err:
-			push_warning("FileAccess.get_file_as_string ", error_string(err))
+			push_error("FileAccess.get_file_as_string ", error_string(err))
 			return
 
 	if not file_str.is_valid_int():
-		push_error("File content invalid")
+		push_error("file content invalid")
 		return
 
 	var file_int := file_str.to_int()
 	if file_int < 0:
-		push_warning("Stored count is negative")
+		push_error("stored count is negative")
 		return
 
 	count = file_int
@@ -172,14 +165,20 @@ func _notification(n: int) -> void:
 			file.store_string(str(count))
 			file.close()
 		else:
-			push_error("FileAccess.open returned ", error_string(FileAccess.get_open_error()))
+			push_error("FileAccess.open ", error_string(FileAccess.get_open_error()))
 
-		print("Waiting for Server thread ", server_thread)
+		print("server_thread.wait_to_finish")
 		server_thread.wait_to_finish()
 
 		for conn in clients:
-			print("Waiting for Client thread ", conn.thread)
+			print("conn.thread.wait_to_finish")
 			conn.thread.wait_to_finish()
 
-		print("Quit")
+		print("quit")
 		get_tree().quit()
+
+
+func locked_ctx(f: Callable) -> void:
+	mutex.lock()
+	f.call()
+	mutex.unlock()

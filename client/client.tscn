@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dcia67h4w1382"]
+[gd_scene load_steps=6 format=3 uid="uid://dcia67h4w1382"]
 
 [ext_resource type="Script" path="res://client/client.gd" id="1_qkutg"]
 
@@ -10,12 +10,14 @@ font_size = 32
 line_spacing = 0.0
 font_size = 48
 
+[sub_resource type="LabelSettings" id="LabelSettings_gp2bn"]
+
 [sub_resource type="LabelSettings" id="LabelSettings_20wjx"]
 line_spacing = 0.0
 font_size = 14
 font_color = Color(1, 1, 1, 0.196078)
 
-[node name="Client" type="Control" node_paths=PackedStringArray("button", "labels_container", "disconnected_label", "count_label", "session_label", "players_label")]
+[node name="Client" type="Control" node_paths=PackedStringArray("container", "disconnected_label", "count_label", "session_label", "players_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,9 +25,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_qkutg")
-button = NodePath("Button")
-labels_container = NodePath("Labels")
-disconnected_label = NodePath("Disconnected")
+container = NodePath("Labels")
+disconnected_label = NodePath("Connecting")
 count_label = NodePath("Labels/Count")
 session_label = NodePath("Labels/Session")
 players_label = NodePath("Labels/Players")
@@ -40,7 +41,8 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 48
 flat = true
 
-[node name="Disconnected" type="Label" parent="."]
+[node name="Connecting" type="Label" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -73,6 +75,7 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_vertical = 1
 text = "You clicked 0 times"
+label_settings = SubResource("LabelSettings_gp2bn")
 horizontal_alignment = 1
 
 [node name="Players" type="Label" parent="Labels"]
@@ -81,3 +84,5 @@ size_flags_vertical = 8
 text = "No one is here."
 label_settings = SubResource("LabelSettings_20wjx")
 horizontal_alignment = 1
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
