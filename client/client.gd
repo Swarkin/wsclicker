@@ -17,11 +17,13 @@ var queued_packets := 0
 class State:
 	var count: int
 	var players: int
+	var session_count := 0
 	var mutex := Mutex.new()
 
-	func _init(_count := 0, _players := 0) -> void:
+	func _init(_count := 0, _players := 0, _session := 0) -> void:
 		count = _count
 		players = _players
+		session_count = _session
 
 func _ready() -> void:
 	set_process(false)
@@ -42,7 +44,7 @@ func _process(_dt: float) -> void:
 	state.mutex.lock()
 	if update_ui:
 		count_label.text = str(state.count)
-		session_label.text = "You clicked %s times" % state.count
+		session_label.text = "You clicked %s times" % state.session_count
 		players_label.text = "You are alone." if state.players == 1 else "One other person is here." if state.players == 2 else str(state.players - 1) + " others are here."
 		update_ui = false
 	state.mutex.unlock()
@@ -51,6 +53,7 @@ func _process(_dt: float) -> void:
 func _on_button_pressed() -> void:
 	state.mutex.lock()
 	queued_packets += 1
+	state.session_count += 1
 	state.mutex.unlock()
 
 
