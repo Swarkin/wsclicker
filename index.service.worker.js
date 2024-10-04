@@ -4,20 +4,20 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1728057769|113108619';
+const CACHE_VERSION = '1728063525|28933705';
 /** @type {string} */
 const CACHE_PREFIX = 'wsclicker-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 /** @type {string} */
-const OFFLINE_URL = 'wsclicker_client_web_wasm32.offline.html';
+const OFFLINE_URL = 'index.offline.html';
 /** @type {boolean} */
 const ENSURE_CROSSORIGIN_ISOLATION_HEADERS = true;
 // Files that will be cached on load.
 /** @type {string[]} */
-const CACHED_FILES = ["wsclicker_client_web_wasm32.html","wsclicker_client_web_wasm32.js","wsclicker_client_web_wasm32.offline.html","wsclicker_client_web_wasm32.worker.js","wsclicker_client_web_wasm32.audio.worklet.js","wsclicker_client_web_wasm32.audio.position.worklet.js"];
+const CACHED_FILES = ["index.html","index.js","index.offline.html","index.worker.js","index.audio.worklet.js","index.audio.position.worklet.js"];
 // Files that we might not want the user to preload, and will only be cached on first load.
 /** @type {string[]} */
-const CACHABLE_FILES = ["wsclicker_client_web_wasm32.wasm","wsclicker_client_web_wasm32.pck"];
+const CACHABLE_FILES = ["index.wasm","index.pck"];
 const FULL_CACHE = CACHED_FILES.concat(CACHABLE_FILES);
 
 self.addEventListener('install', (event) => {
