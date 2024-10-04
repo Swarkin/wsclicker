@@ -2,6 +2,6 @@
 export/web/*
 export/windows/*
 export/linux/*
-!export/web/web_nothreads.zip
+!export/web/godot.web.template_release.wasm32.zip
 !export/windows/godot.windows.template_release.x86_64.exe
 !export/linux/godot.linuxbsd.template_release.x86_64
