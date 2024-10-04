@@ -96,7 +96,7 @@ body {
 
 		<script src="wsclicker_client_web_wasm32.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"wsclicker_client_web_wasm32","experimentalVK":false,"fileSizes":{"wsclicker_client_web_wasm32.pck":193472,"wsclicker_client_web_wasm32.wasm":21006879},"focusCanvas":true,"gdextensionLibs":[],"serviceWorker":"wsclicker_client_web_wasm32.service.worker.js"};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"wsclicker_client_web_wasm32","experimentalVK":false,"fileSizes":{"wsclicker_client_web_wasm32.pck":193472,"wsclicker_client_web_wasm32.wasm":23479206},"focusCanvas":true,"gdextensionLibs":[],"serviceWorker":"wsclicker_client_web_wasm32.service.worker.js"};
 const GODOT_THREADS_ENABLED = true;
 const engine = new Engine(GODOT_CONFIG);
 
@@ -165,10 +165,11 @@ const engine = new Engine(GODOT_CONFIG);
 				new Promise((resolve) => {
 					setTimeout(() => resolve(), 2000);
 				}),
-			]).catch((err) => {
-				console.error('Error while registering service worker:', err);
-			}).then(() => {
+			]).then(() => {
+				// Reload if there was no error.
 				window.location.reload();
+			}).catch((err) => {
+				console.error('Error while registering service worker:', err);
 			});
 		} else {
 			// Display the message as usual
