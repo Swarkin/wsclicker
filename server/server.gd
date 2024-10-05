@@ -25,7 +25,6 @@ class ClientConnection:
 	func send_packet(p: PackedByteArray) -> Error:
 		if not ready:
 			return Error.ERR_BUSY
-		print("ws.send")
 		return ws.send(p)
 
 func _ready() -> void:
@@ -72,10 +71,10 @@ func handle_connection(t: Thread, peer: StreamPeerTCP) -> void:
 		return
 
 	var conn := ClientConnection.new(ws, t)
-	locked_ctx(func() -> void:
-		clients.append(conn)
-		print(clients)
-	)
+	mutex.lock()
+	clients.append(conn)
+	print(clients)
+	mutex.unlock()
 
 	while true:
 		ws.poll()
@@ -109,11 +108,11 @@ func handle_connection(t: Thread, peer: StreamPeerTCP) -> void:
 
 			ws.STATE_CLOSED:
 				print("closed conn")
-				locked_ctx(func() -> void:
-					clients.erase(conn)
-					print(clients)
-					sync()
-				)
+				mutex.lock()
+				clients.erase(conn)
+				print(clients)
+				sync()
+				mutex.unlock()
 				break
 
 		OS.delay_msec(DELAY_MS)
@@ -176,9 +175,3 @@ func _notification(n: int) -> void:
 
 		print("quit")
 		get_tree().quit()
-
-
-func locked_ctx(f: Callable) -> void:
-	mutex.lock()
-	f.call()
-	mutex.unlock()
