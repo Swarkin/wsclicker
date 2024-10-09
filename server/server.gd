@@ -107,7 +107,6 @@ func handle_connection(t: Thread, peer: StreamPeerTCP) -> void:
 				mutex.unlock()
 
 			ws.STATE_CLOSED:
-				print("closed conn")
 				mutex.lock()
 				clients.erase(conn)
 				print(clients)
@@ -118,7 +117,6 @@ func handle_connection(t: Thread, peer: StreamPeerTCP) -> void:
 		OS.delay_msec(DELAY_MS)
 
 
-## Need
 func sync(override: ClientConnection = null) -> void:
 	var p := API.SyncPacket.new(count, clients.size()).encode()
 	if override:
